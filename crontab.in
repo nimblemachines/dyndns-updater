@@ -1,0 +1,14 @@
+# Since the purpose of this (mostly) is to run the update-ip script, we
+# don't want to get mail about commands that run.
+MAILTO=""
+
+# min hour mday month wday
+
+# run every 10 minutes - this is the max freq we can poll the dyndns.org
+# server and not have them consider us abusive
+*/10 * * * *  $scriptdir/update-ip.sh
+
+# to make sure we update dyndns every 28 days, we count weeks by appending
+# a "W" to a file. update-ip.sh checks it. Let's do this every Thursday afternoon.
+00 15 * * 4  $scriptdir/count-weeks.sh
+

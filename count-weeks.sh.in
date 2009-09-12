@@ -13,9 +13,9 @@
 # and checked when that file's contents were exactly four characters long?
 # That would be 28 days, no?
 
-# This needs to match the setting in update-ip.sh, and be writable by the
-# user that will be executing this script.
-cd /home/user/dyndns/scripts
+# This directory needs to be writable by the user that cron will be executing
+# this script as.
+cd $scriptdir
 
 # BTW, I'm _not_ using the shell builtin because on my Mac (running
 # GNU bash, version 3.2.17(1)-release (i386-apple-darwin9.0))

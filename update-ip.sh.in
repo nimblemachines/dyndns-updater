@@ -15,10 +15,10 @@
 # logger.
 export PATH=/usr/local/bin:$PATH
 
-# Put this whereever you want. The scripts write a couple of files here.
-# If you're running from cron as a regular user, this directory needs to be
-# readable and writable by that user.
-cd /home/user/dyndns/scripts
+# The scripts write a couple of files here.  If you're running from cron as
+# a regular user, this directory needs to be readable and writable by that
+# user.
+cd $scriptdir
 
 # This is whatever you set up when you opened your DynDns account.
 #myid="username:userpass"
@@ -59,8 +59,8 @@ update_dyndns () {
 # The IP address part of the response from checkip.dyndns.org (an HTML
 # page) looks like this: "Current IP Address: 71.34.77.71"
 
-#currentip=$(curl "http://checkip.dyndns.org/" \
-currentip=$(cat checkip.dyndns.org.html \
+#currentip=$(cat checkip.dyndns.org.html \
+currentip=$(curl "http://checkip.dyndns.org/" \
     | sed -e 's/\(.*Current IP Address: \)\([0-9.]\{1,\}\)\(.*\)/\2/')
 
 # get IP from last run
