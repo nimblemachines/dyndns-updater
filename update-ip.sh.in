@@ -53,7 +53,11 @@ update_dyndns () {
         echo "$response" | mail -s "$myhost IP changed: $lastip --> $currentip" $myemail
     fi
 
+    # remember our currentip
     echo $currentip > lastip
+
+    # start our 28-day count
+    cat /dev/null > weeks
 }
 
 # The IP address part of the response from checkip.dyndns.org (an HTML
@@ -75,7 +79,6 @@ lastip="0.0.0.0"
 
 if [ "$weeks" == "1111" ]; then
     update_dyndns "28 days passed"
-    cat /dev/null > weeks
 
 # Make sure we got an IP before we blow away our old one and contact
 # dyndns. We don't want to get blocked for abuse.
