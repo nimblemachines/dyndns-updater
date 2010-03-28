@@ -1,6 +1,4 @@
 # ignore generated files
-count-weeks.sh
 crontab
 lastip
 update-ip.sh
-weeks
