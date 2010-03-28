@@ -56,8 +56,9 @@ update_dyndns () {
     # remember our currentip
     echo $currentip > lastip
 
-    # start our 28-day count
-    cat /dev/null > weeks
+    # record our "expires" time, 28 days in the future
+    # 28 days is 86400 + 28 = 2,419,200 seconds
+    echo $(($now + 2419200)) > expires
 }
 
 # The IP address part of the response from checkip.dyndns.org (an HTML
@@ -71,13 +72,17 @@ currentip=$(curl "http://checkip.dyndns.org/" \
 lastip="0.0.0.0"
 [ -f lastip ] && lastip=$(cat lastip)
 
+# Get the current time, in seconds since the Unix epoch (UTC)
+now=$(date +%s)
+
+# Get our expires time, if it exists
+expires=0
+[ -f expires ] && expires=$(cat expires)
+
 # If, by some miracle, 28 days have elapsed _and_ our IP address has
 # changed, don't do both updates.
 
-# get count of weeks
-[ -f weeks ] && weeks=$(cat weeks)
-
-if [ "$weeks" == "1111" ]; then
+if [ $now -ge $expires ]; then
     update_dyndns "28 days passed"
 
 # Make sure we got an IP before we blow away our old one and contact

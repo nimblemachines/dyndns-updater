@@ -1,4 +1,5 @@
 # ignore generated files
 crontab
-lastip
 update-ip.sh
+lastip
+expires
