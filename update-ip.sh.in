@@ -46,18 +46,21 @@ update_dyndns () {
     response=$(curl --cacert cacert_mozilla.pem \
         -A $agent "https://$myid@$svc?hostname=$myhost&myip=$currentip$keep")
 
-    logger -t "update-ip" "$reason: $lastip --> $currentip"
-    logger -t "update-ip" "DynDns responded: $response"
+    #logger -t "update-ip" "$reason: $lastip --> $currentip"
+    #logger -t "update-ip" "dyndns responded: $response"
+
+    (echo "$stamp  $reason: $lastip --> $currentip"
+    echo "$stamp  dyndns responded: $response") >> log
 
     if [ "$myemail" ]; then
-        echo "$response" | mail -s "$myhost IP changed: $lastip --> $currentip" $myemail
+        echo "$response" | mail -s "$myhost ($reason): $lastip --> $currentip" $myemail
     fi
 
     # remember our currentip
     echo $currentip > lastip
 
     # record our "expires" time, 28 days in the future
-    # 28 days is 86400 + 28 = 2,419,200 seconds
+    # 28 days is 86400 * 28 = 2419200 seconds
     echo $(($now + 2419200)) > expires
 }
 
@@ -78,6 +81,10 @@ now=$(date +%s)
 # Get our expires time, if it exists
 expires=0
 [ -f expires ] && expires=$(cat expires)
+
+# Make a note that we've run, and what the current values are
+stamp=$(date "+%F %T")
+echo "$stamp  $lastip --> $currentip  ($(($expires-$now)) seconds remain)" >> log
 
 # If, by some miracle, 28 days have elapsed _and_ our IP address has
 # changed, don't do both updates.
