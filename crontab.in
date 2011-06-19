@@ -4,6 +4,6 @@ MAILTO=""
 
 # min hour mday month wday
 
-# run every 10 minutes - this is the max freq we can poll the dyndns.org
-# server and not have them consider us abusive
-*/10 * * * *  $scriptdir/update-ip.sh
+# dyndns.org considers polling more often than every 10 minutes abusive.
+# Polling more than every hour is probably overkill, anyway.
+42 * * * *  $scriptdir/update-ip.sh
