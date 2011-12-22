@@ -56,12 +56,18 @@ update_dyndns () {
         echo "$response" | mail -s "$myhost ($reason): $lastip --> $currentip" $myemail
     fi
 
-    # remember our currentip
-    echo $currentip > lastip
+    # Only update currentip and expires if update (via dyndns.org) was
+    # successfull.
+    if echo $response | grep -q "good\|nochg"; then
+        echo "$stamp  good response from dyndns; resetting lastip and expires" >> log
 
-    # record our "expires" time, 28 days in the future
-    # 28 days is 86400 * 28 = 2419200 seconds
-    echo $(($now + 2419200)) > expires
+        # remember our currentip
+        echo $currentip > lastip
+
+        # record our "expires" time, 28 days in the future
+        # 28 days is 86400 * 28 = 2419200 seconds
+        echo $(($now + 2419200)) > expires
+    fi
 }
 
 # The IP address part of the response from checkip.dyndns.org (an HTML
