@@ -73,9 +73,14 @@ update_dyndns () {
 # The IP address part of the response from checkip.dyndns.org (an HTML
 # page) looks like this: "Current IP Address: 71.34.77.71"
 
+# Load the page separately from parsing out the IP address, so it's easier
+# to debug problems, if any.
+
+curl -o checkip.html http://checkip.dyndns.org/
+
 #currentip=$(cat checkip.dyndns.org.html \
-currentip=$(curl "http://checkip.dyndns.org/" \
-    | sed -e 's/\(.*Current IP Address: \)\([0-9.]\{1,\}\)\(.*\)/\2/')
+currentip=$(cat checkip.html \
+    | sed -n -e 's/\(.*Current IP Address: \)\([0-9.]\{1,\}\)\(.*\)/\2/p')
 
 # get IP from last run
 lastip="0.0.0.0"
@@ -92,10 +97,16 @@ expires=0
 stamp=$(date "+%F %T")
 echo "$stamp  $lastip --> $currentip  ($(($expires-$now)) seconds remain)" >> log
 
+# If we didn't get a valid IP address from checkip.dyndns.org, don't do
+# anything more.
+
+if [ -z "$currentip" ]; then
+    echo "$stamp  No valid IP address returned from checkip; exiting" >> log
+
 # If, by some miracle, 28 days have elapsed _and_ our IP address has
 # changed, don't do both updates.
 
-if [ $now -ge $expires ]; then
+elif [ $now -ge $expires ]; then
     update_dyndns "28 days passed"
 
 # Make sure we got an IP before we blow away our old one and contact
